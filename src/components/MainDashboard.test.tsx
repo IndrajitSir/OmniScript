@@ -77,13 +77,20 @@ describe('MainDashboard', () => {
   it('switches the foundational template and keeps per-template selections', () => {
     renderDashboard();
 
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: 'system-metrics' } });
+    // Open the custom dropdown by clicking the trigger button
+    const trigger = screen.getByRole('button', { name: /utility template/i });
+    fireEvent.click(trigger);
 
-    expect((select as HTMLSelectElement).value).toBe('system-metrics');
+    // Click the System Monitor option
+    const sysOption = screen.getByRole('option', { name: /sysinfo/i });
+    fireEvent.click(sysOption);
+
     expect(screen.getByTestId('os-source').textContent).toContain('-c | --cpu)');
 
-    fireEvent.change(select, { target: { value: 'network-diagnostics' } });
+    // Switch back
+    fireEvent.click(trigger);
+    const netOption = screen.getByRole('option', { name: /myip/i });
+    fireEvent.click(netOption);
     expect(screen.getByTestId('os-source').textContent).toContain('-a | --active)');
   });
 
@@ -119,8 +126,14 @@ describe('MainDashboard', () => {
     fireEvent.change(input, { target: { value: 'net-tool!' } });
     expect(screen.getByText(/net-tool\.sh —/)).toBeTruthy();
 
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'backup-engine' } });
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'network-diagnostics' } });
+    // Switch to backup template
+    const trigger = screen.getByRole('button', { name: /utility template/i });
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole('option', { name: /snapkit/i }));
+
+    // Switch back to network
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole('option', { name: /myip/i }));
     expect((screen.getByPlaceholderText('myip') as HTMLInputElement).value).toBe('net-tool!');
   });
 });

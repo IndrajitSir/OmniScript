@@ -24,14 +24,14 @@ export function TemplateSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
-  const containerRef = useRef(null);
-  const textRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event: MouseEvent) {
       if (
         containerRef.current &&
-        !containerRef.current.contains(event.target)
+        !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -65,6 +65,7 @@ export function TemplateSelector() {
           {/* Selector Trigger Button */}
           <button
             type="button"
+            aria-label="Utility template"
             onClick={() => setIsOpen(!isOpen)}
             onMouseEnter={() => isTruncated && setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}

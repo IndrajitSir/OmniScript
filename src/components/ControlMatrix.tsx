@@ -48,7 +48,7 @@ export function ControlMatrix() {
     setTheme,
     resetAll,
     activeModules,
-    dependencies,
+    // dependencies,
     script,
   } = useComposer();
 

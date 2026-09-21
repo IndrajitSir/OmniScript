@@ -1,36 +1,41 @@
-import { useComposer } from '../state';
-import type { ThemeId } from '../types/script';
-import { Panel, StatChip, Switch } from './ui';
+import { useComposer } from "../state";
+import type { ThemeId } from "../types/script";
+import { Panel, StatChip, Switch } from "./ui";
 
 const OPTION_LABELS: Array<{
-  key: 'includeColor' | 'failFastOnErrors' | 'verifyDependencies' | 'includeClipboard' | 'includeTrace';
+  key:
+    | "includeColor"
+    | "failFastOnErrors"
+    | "verifyDependencies"
+    | "includeClipboard"
+    | "includeTrace";
   label: string;
   hint: string;
 }> = [
   {
-    key: 'includeColor',
-    label: 'ANSI color mapping',
-    hint: 'Emit theme-derived color variables; degrade to plain text when stdout is not a tty.',
+    key: "includeColor",
+    label: "ANSI color mapping",
+    hint: "Emit theme-derived color variables; degrade to plain text when stdout is not a tty.",
   },
   {
-    key: 'failFastOnErrors',
-    label: 'strict error handling',
-    hint: 'Prefix the wrapper with set -euo pipefail and a hardened IFS.',
+    key: "failFastOnErrors",
+    label: "strict error handling",
+    hint: "Prefix the wrapper with set -euo pipefail and a hardened IFS.",
   },
   {
-    key: 'verifyDependencies',
-    label: 'dependency preflight',
-    hint: 'Check every required package up front and print a distro-appropriate install hint.',
+    key: "verifyDependencies",
+    label: "dependency preflight",
+    hint: "Check every required package up front and print a distro-appropriate install hint.",
   },
   {
-    key: 'includeClipboard',
-    label: 'clipboard utility block',
-    hint: 'Compile the universal wl-copy → xclip → xsel → pbcopy helper into the script.',
+    key: "includeClipboard",
+    label: "clipboard utility block",
+    hint: "Compile the universal wl-copy → xclip → xsel → pbcopy helper into the script.",
   },
   {
-    key: 'includeTrace',
-    label: 'debug tracing',
-    hint: 'Add set -x so every executed command is echoed while you debug.',
+    key: "includeTrace",
+    label: "debug tracing",
+    hint: "Add set -x so every executed command is echoed while you debug.",
   },
 ];
 
@@ -56,13 +61,13 @@ export function ControlMatrix() {
         <button
           type="button"
           onClick={resetAll}
-          className="rounded-md border border-[var(--os-border)] px-2 py-1 font-mono text-[10px] text-[var(--os-muted)] transition hover:border-[var(--os-err)] hover:text-[var(--os-err)]"
+          className="rounded-md border border-[var(--os-border)] px-2 py-1 cursor-pointer font-mono text-[10px] text-[var(--os-muted)] transition hover:border-[var(--os-err)] hover:text-[var(--os-err)]"
         >
           reset all
         </button>
       }
     >
-      <div className="-mx-2 flex flex-col">
+      <div className="-mx-2 flex flex-col cursor-pointer *:cursor-pointer gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
         {OPTION_LABELS.map((option) => (
           <Switch
             key={option.key}
@@ -74,11 +79,11 @@ export function ControlMatrix() {
         ))}
       </div>
 
-      <div>
-        <span className="mb-2 block text-[11px] font-semibold tracking-wider text-[var(--os-muted)] uppercase">
+      <div className="-mx-2 gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
+        <span className="mb-1 block text-[11px] font-semibold tracking-wider text-[var(--os-muted)] uppercase">
           Palette preset
         </span>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 cursor-pointer *:cursor-pointer gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
           {themes.map((preset) => {
             const active = preset.id === theme.id;
             return (
@@ -89,8 +94,8 @@ export function ControlMatrix() {
                 aria-pressed={active}
                 className={`rounded-lg border px-2.5 py-2 text-left transition ${
                   active
-                    ? 'border-[var(--os-accent)] bg-[var(--os-accent)]/10'
-                    : 'border-[var(--os-border)] bg-[var(--os-bg)]/40 hover:border-[var(--os-muted)]'
+                    ? "border-[var(--os-accent)] bg-[var(--os-accent)]/10"
+                    : "border-[var(--os-border)] bg-[var(--os-bg)]/40 hover:border-[var(--os-muted)]"
                 }`}
               >
                 <span className="flex items-center gap-1.5">
@@ -115,19 +120,27 @@ export function ControlMatrix() {
               </button>
             );
           })}
+          <p className="mt-1 text-[11px] leading-snug text-[var(--os-muted)] truncate w-max">
+            {theme.blurb}
+          </p>
         </div>
-        <p className="mt-2 text-[11px] leading-snug text-[var(--os-muted)]">{theme.blurb}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-1.5">
+      <div className="-mx-2 grid grid-cols-1 gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
         <StatChip label="Modules compiled" value={`${activeModules.length}`} />
-        <StatChip label="Packages verified" value={`${dependencies.length}`} />
-        <StatChip label="Palette id" value={theme.id} />
-        <StatChip label="Output bytes" value={new TextEncoder().encode(script).length.toLocaleString()} />
+        {/* <StatChip label="Packages verified" value={`${dependencies.length}`} /> */}
+        {/* <StatChip label="Palette id" value={theme.id} /> */}
+        <StatChip
+          label="Output bytes"
+          value={new TextEncoder().encode(script).length.toLocaleString()}
+        />
       </div>
 
-      <p className="mt-auto rounded-lg border border-dashed border-[var(--os-border)] px-3 py-2 text-[11px] leading-snug text-[var(--os-muted)]">
-        The palette rewrites both the <code className="font-mono text-[var(--os-accent-alt)]">$'\033[..m'</code>{' '}
+      <p className="-mx-2 mt-1 rounded-lg border border-dashed border-[var(--os-border)] px-3 py-2 text-[11px] leading-snug text-[var(--os-muted)]">
+        The palette rewrites both the{" "}
+        <code className="font-mono text-[var(--os-accent-alt)]">
+          $'\033[..m'
+        </code>{" "}
         declarations inside the script and the CSS tokens of this interface.
       </p>
     </Panel>

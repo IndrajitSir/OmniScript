@@ -26,18 +26,18 @@ export function TemplateSelector() {
       subtitle="Pick a foundational utility layout, rename the executable, then toggle the sub-commands you want compiled in."
     >
       {/* Template picker */}
-      <label className="block">
+      <label className="block gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2"/*focus-within:border-[var(--os-accent)] focus-within:ring-2 focus-within:ring-[var(--os-accent)]/25"*/>
         <span className="mb-1.5 block text-[11px] font-semibold tracking-wider text-[var(--os-muted)] uppercase">
           Utility template
         </span>
-        <div className="relative">
+        <div className="relative cursor-pointer">
           <select
             value={activeTemplate.id}
             onChange={(event) => selectTemplate(event.target.value)}
-            className="w-full appearance-none rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)] px-3 py-2.5 pr-9 text-sm text-[var(--os-text)] transition outline-none focus:border-[var(--os-accent)] focus:ring-2 focus:ring-[var(--os-accent)]/25"
+            className="w-full appearance-none rounded-lg cursor-pointer border border-[var(--os-border)] bg-[var(--os-bg)] px-3 py-2.5 pr-9 text-sm text-[var(--os-text)] transition outline-none focus:border-[var(--os-accent)] focus:ring-2 focus:ring-[var(--os-accent)]/25"
           >
             {templates.map((template) => (
-              <option key={template.id} value={template.id} className="bg-[var(--os-surface)]">
+              <option key={template.id} value={template.id} className="cursor-pointer bg-[var(--os-surface)]">
                 {template.icon ? `${template.icon}  ` : ''}
                 {template.name}
               </option>
@@ -47,13 +47,13 @@ export function TemplateSelector() {
             ▾
           </span>
         </div>
-        <p className="mt-2 text-xs leading-relaxed text-[var(--os-muted)]">
+        <p className="mt-2 text-xs cursor-pointer leading-relaxed text-[var(--os-muted)]">
           {activeTemplate.shortDescription}
         </p>
       </label>
 
       {/* Command name */}
-      <label className="block">
+      <label className="block gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
         <span className="mb-1.5 flex items-center justify-between text-[11px] font-semibold tracking-wider text-[var(--os-muted)] uppercase">
           Executable trigger name
           {commandNameTouched ? (
@@ -82,8 +82,8 @@ export function TemplateSelector() {
       </label>
 
       {/* Module checklist */}
-      <div className="flex min-h-0 flex-1 flex-col">
-        <div className="mb-2 flex items-center justify-between">
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
+        <div className="mb-1 flex items-center justify-between">
           <span className="text-[11px] font-semibold tracking-wider text-[var(--os-muted)] uppercase">
             Modules ({enabledCount}/{availableModules.length})
           </span>
@@ -91,21 +91,21 @@ export function TemplateSelector() {
             <button
               type="button"
               onClick={() => setAllModules(true)}
-              className="rounded-md border border-[var(--os-border)] px-2 py-0.5 font-mono text-[10px] text-[var(--os-muted)] transition hover:border-[var(--os-accent)] hover:text-[var(--os-accent)]"
+              className="rounded-md border cursor-pointer border-[var(--os-border)] px-2 py-0.5 font-mono text-[10px] text-[var(--os-muted)] transition hover:border-[var(--os-accent)] hover:text-[var(--os-accent)]"
             >
               all
             </button>
             <button
               type="button"
               onClick={() => setAllModules(false)}
-              className="rounded-md border border-[var(--os-border)] px-2 py-0.5 font-mono text-[10px] text-[var(--os-muted)] transition hover:border-[var(--os-err)] hover:text-[var(--os-err)]"
+              className="rounded-md border cursor-pointer border-[var(--os-border)] px-2 py-0.5 font-mono text-[10px] text-[var(--os-muted)] transition hover:border-[var(--os-err)] hover:text-[var(--os-err)]"
             >
               none
             </button>
           </div>
         </div>
 
-        <ul className="os-scroll -mr-1 flex max-h-[22rem] min-h-0 flex-1 flex-col gap-1 overflow-y-auto pr-1">
+        <ul className="os-scroll -mr-1 flex max-h-[24.6rem] min-h-0 flex-1 flex-col gap-1 overflow-y-auto pr-1 gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
           {availableModules.map((module) => {
             const enabled = enabledModuleIds.has(module.id);
             return (

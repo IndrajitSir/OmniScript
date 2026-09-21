@@ -1,6 +1,8 @@
-import { dependencyInfo } from '../config/dependencies';
-import { useComposer } from '../state';
-import { Panel, Pill } from './ui';
+import { dependencyInfo } from "../config/dependencies";
+import { useComposer } from "../state";
+import { Panel, Pill } from "./ui";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function TemplateSelector() {
   const {
@@ -17,7 +19,34 @@ export function TemplateSelector() {
   } = useComposer();
 
   const enabledCount = enabledModuleIds.size;
-  const commandNameTouched = settings.commandName !== activeTemplate.defaultCommandName;
+  const commandNameTouched =
+    settings.commandName !== activeTemplate.defaultCommandName;
+  const [isOpen, setIsOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [isTruncated, setIsTruncated] = useState(false);
+  const containerRef = useRef(null);
+  const textRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (textRef.current) {
+      const element = textRef.current;
+      // If the scroll width is greater than physical client width, it is truncated
+      setIsTruncated(element.scrollWidth > element.clientWidth);
+    }
+  }, [activeTemplate]);
 
   return (
     <Panel
@@ -26,26 +55,129 @@ export function TemplateSelector() {
       subtitle="Pick a foundational utility layout, rename the executable, then toggle the sub-commands you want compiled in."
     >
       {/* Template picker */}
-      <label className="block gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2"/*focus-within:border-[var(--os-accent)] focus-within:ring-2 focus-within:ring-[var(--os-accent)]/25"*/>
+      <label
+        className="block gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2" /*focus-within:border-[var(--os-accent)] focus-within:ring-2 focus-within:ring-[var(--os-accent)]/25"*/
+      >
         <span className="mb-1.5 block text-[11px] font-semibold tracking-wider text-[var(--os-muted)] uppercase">
           Utility template
         </span>
-        <div className="relative cursor-pointer">
-          <select
-            value={activeTemplate.id}
-            onChange={(event) => selectTemplate(event.target.value)}
-            className="w-full appearance-none rounded-lg cursor-pointer border border-[var(--os-border)] bg-[var(--os-bg)] px-3 py-2.5 pr-9 text-sm text-[var(--os-text)] transition outline-none focus:border-[var(--os-accent)] focus:ring-2 focus:ring-[var(--os-accent)]/25"
+        <div ref={containerRef} className="relative w-full max-w-xs">
+          {/* Selector Trigger Button */}
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            onMouseEnter={() => isTruncated && setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            aria-haspopup="listbox"
+            aria-expanded={isOpen}
+            className="flex w-full min-w-0 cursor-pointer items-center justify-between rounded-xl border border-[var(--os-border)] bg-[var(--os-bg)] px-3.5 py-2.5 text-sm text-[var(--os-text)] transition-all outline-none hover:bg-[var(--os-muted)]/5 focus:border-[var(--os-accent)] focus:ring-2 focus:ring-[var(--os-accent)]/20 shadow-xs"
           >
-            {templates.map((template) => (
-              <option key={template.id} value={template.id} className="cursor-pointer bg-[var(--os-surface)]">
-                {template.icon ? `${template.icon}  ` : ''}
-                {template.name}
-              </option>
-            ))}
-          </select>
-          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-[var(--os-muted)]">
-            ▾
-          </span>
+            <span className="flex min-w-0 flex-1 items-center gap-2 pr-2">
+              {activeTemplate.icon && (
+                <span className="text-base leading-none select-none shrink-0">
+                  {activeTemplate.icon}
+                </span>
+              )}
+              <span
+                ref={textRef}
+                className="truncate font-medium text-left flex-1"
+              >
+                {activeTemplate.name}
+              </span>
+            </span>
+
+            {/* Chevron Arrow Icon */}
+            <motion.svg
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.15, ease: "easeInOut" }}
+              className="h-4 w-4 shrink-0 text-[var(--os-muted)]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 9l-7 7-7-7"
+              />
+            </motion.svg>
+          </button>
+
+          {/* Floating Action Tooltip */}
+          <AnimatePresence>
+            {showTooltip && !isOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+                className="absolute bottom-full left-0 z-50 mb-2 w-max max-w-xs rounded-lg border border-[var(--os-border)] bg-[var(--os-surface)] px-2.5 py-1.5 text-xs text-[var(--os-text)] shadow-md pointer-events-none"
+              >
+                {activeTemplate.name}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Dropdown Flyout Menu */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.ul
+                role="listbox"
+                initial={{ opacity: 0, y: -4, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.99 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+                className="absolute z-50 mt-1.5 max-h-60 w-full overflow-auto rounded-xl border border-[var(--os-border)] bg-[var(--os-surface)] p-1 shadow-lg backdrop-blur-md outline-none"
+              >
+                {templates.map((template) => {
+                  const isSelected = template.id === activeTemplate.id;
+                  return (
+                    <li
+                      key={template.id}
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        selectTemplate(template.id);
+                        setIsOpen(false);
+                        setShowTooltip(false);
+                      }}
+                      className={`relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+                        isSelected
+                          ? "bg-[var(--os-accent)]/15 text-[var(--os-accent)] font-medium"
+                          : "text-[var(--os-text)] hover:bg-[var(--os-muted)]/10"
+                      }`}
+                    >
+                      {template.icon && (
+                        <span className="text-base leading-none shrink-0">
+                          {template.icon}
+                        </span>
+                      )}
+                      <span className="flex-1 truncate text-left">
+                        {template.name}
+                      </span>
+
+                      {isSelected && (
+                        <svg
+                          className="h-4 w-4 shrink-0 text-[var(--os-accent)]"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </li>
+                  );
+                })}
+              </motion.ul>
+            )}
+          </AnimatePresence>
         </div>
         <p className="mt-2 text-xs cursor-pointer leading-relaxed text-[var(--os-muted)]">
           {activeTemplate.shortDescription}
@@ -59,7 +191,7 @@ export function TemplateSelector() {
           {commandNameTouched ? (
             <button
               type="button"
-              onClick={() => setCommandName('')}
+              onClick={() => setCommandName("")}
               className="font-mono text-[10px] tracking-normal text-[var(--os-accent)] normal-case hover:underline"
             >
               reset to {activeTemplate.defaultCommandName}
@@ -77,7 +209,11 @@ export function TemplateSelector() {
           />
         </div>
         <p className="mt-1.5 text-[11px] text-[var(--os-muted)]">
-          Sanitised to <code className="font-mono text-[var(--os-accent-alt)]">[A-Za-z0-9._-]</code> at compile time.
+          Sanitised to{" "}
+          <code className="font-mono text-[var(--os-accent-alt)]">
+            [A-Za-z0-9._-]
+          </code>{" "}
+          at compile time.
         </p>
       </label>
 
@@ -114,8 +250,8 @@ export function TemplateSelector() {
                   title={module.details ?? module.summary}
                   className={`flex cursor-pointer items-start gap-2.5 rounded-lg border px-2.5 py-2 transition ${
                     enabled
-                      ? 'border-[var(--os-accent)]/50 bg-[var(--os-accent)]/10'
-                      : 'border-[var(--os-border)] bg-[var(--os-bg)]/40 hover:border-[var(--os-muted)]'
+                      ? "border-[var(--os-accent)]/50 bg-[var(--os-accent)]/10"
+                      : "border-[var(--os-border)] bg-[var(--os-bg)]/40 hover:border-[var(--os-muted)]"
                   }`}
                 >
                   <input
@@ -128,7 +264,9 @@ export function TemplateSelector() {
                     <span className="flex flex-wrap items-center gap-1.5">
                       <code
                         className={`font-mono text-[11px] font-semibold ${
-                          enabled ? 'text-[var(--os-accent)]' : 'text-[var(--os-muted)]'
+                          enabled
+                            ? "text-[var(--os-accent)]"
+                            : "text-[var(--os-muted)]"
                         }`}
                       >
                         {module.flag}

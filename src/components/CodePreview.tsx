@@ -14,6 +14,7 @@ import {
 } from "../utils/highlight";
 import { simulateRun } from "../utils/simulator";
 import { Panel, Pill } from "./ui";
+import { motion } from "framer-motion";
 
 const TOKEN_CLASSES: Record<BashTokenType, string> = {
   shebang: "text-[var(--os-muted)] italic",
@@ -70,22 +71,37 @@ export function CodePreview() {
       subtitle="Live compiled output. Every toggle you flip on the left is reflected here."
       className="flex h-[calc(100vh-2rem)] min-h-0 flex-col"
       actions={
-        <div className="flex items-center gap-1 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/60 p-0.5">
-          {(["source", "output"] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setTab(value)}
-              aria-pressed={tab === value}
-              className={`rounded-md px-2 py-1 cursor-pointer font-mono text-[10px] tracking-wide uppercase transition ${
-                tab === value
-                  ? "bg-[var(--os-accent)]/20 text-[var(--os-accent)]"
-                  : "text-[var(--os-muted)] hover:text-[var(--os-text)]"
-              }`}
-            >
-              {value === "source" ? "source" : "simulated run"}
-            </button>
-          ))}
+        <div className="flex items-center gap-1 rounded-xl border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-1 shadow-sm backdrop-blur-sm">
+          {(["source", "output"] as const).map((value) => {
+            const isActive = tab === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setTab(value)}
+                aria-pressed={isActive}
+                className={`relative rounded-lg px-3 py-1.5 cursor-pointer font-sans text-xs font-medium tracking-normal transition-colors duration-200 ${
+                  isActive
+                    ? "text-[var(--os-accent)]"
+                    : "text-[var(--os-muted)] hover:text-[var(--os-text)]"
+                }`}
+              >
+                {/* Animated Background Pill */}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute inset-0 rounded-lg bg-[var(--os-accent)]/15 border border-[var(--os-accent)]/10"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+
+                {/* Text Layer (needs relative & z-10 so it sits above the animated pill) */}
+                <span className="relative z-10 capitalize">
+                  {value === "source" ? "Source" : "Simulated Run"}
+                </span>
+              </button>
+            );
+          })}
         </div>
       }
     >

@@ -1,5 +1,5 @@
 import { useComposer } from "../state";
-import type { ThemeId } from "../types/script";
+// import type { ThemeId } from "../types/script";
 import { Panel, StatChip, Switch } from "./ui";
 
 const OPTION_LABELS: Array<{
@@ -43,12 +43,12 @@ export function ControlMatrix() {
   const {
     settings,
     updateOptions,
-    themes,
+    // themes,
     theme,
-    setTheme,
+    // setTheme,
     resetAll,
     activeModules,
-    // dependencies,
+    dependencies,
     script,
   } = useComposer();
 
@@ -79,7 +79,7 @@ export function ControlMatrix() {
         ))}
       </div>
 
-      <div className="-mx-2 gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
+      {/* <div className="-mx-2 gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
         <span className="mb-1 block text-[11px] font-semibold tracking-wider text-[var(--os-muted)] uppercase">
           Palette preset
         </span>
@@ -124,12 +124,12 @@ export function ControlMatrix() {
             {theme.blurb}
           </p>
         </div>
-      </div>
+      </div> */}
 
       <div className="-mx-2 grid grid-cols-1 gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
         <StatChip label="Modules compiled" value={`${activeModules.length}`} />
-        {/* <StatChip label="Packages verified" value={`${dependencies.length}`} /> */}
-        {/* <StatChip label="Palette id" value={theme.id} /> */}
+        <StatChip label="Packages verified" value={`${dependencies.length}`} />
+        <StatChip label="Palette id" value={theme.id} />
         <StatChip
           label="Output bytes"
           value={new TextEncoder().encode(script).length.toLocaleString()}

@@ -5,7 +5,14 @@ import { CodePreview } from './CodePreview';
 import { ControlMatrix } from './ControlMatrix';
 import { TemplateSelector } from './TemplateSelector';
 
-export function MainDashboard() {
+/**
+ * The original OmniScript three-column workspace, now hosted as a platform tool.
+ *
+ * `embedded` trims the standalone branding/hero chrome so the workspace can sit
+ * inside the platform shell (breadcrumbs + app header) without double headers,
+ * while the default render remains fully standalone for the existing tests.
+ */
+export function MainDashboard({ embedded = false }: { embedded?: boolean } = {}) {
   const { theme, templates, activeTemplate, activeModules, settings } = useComposer();
 
   const cssVars = themeToCssVars(theme) as CSSProperties;
@@ -14,16 +21,25 @@ export function MainDashboard() {
     <div
       data-testid="os-shell"
       style={cssVars}
-      className="min-h-screen bg-[var(--os-bg)] text-[var(--os-text)] transition-colors duration-300"
+      className={`bg-[var(--os-bg)] text-[var(--os-text)] transition-colors duration-300 ${
+        embedded ? 'rounded-none' : 'min-h-screen'
+      }`}
     >
-      <div
-        className="pointer-events-none fixed inset-x-0 top-0 h-72 opacity-60"
-        style={{
-          background: `radial-gradient(1000px 320px at 20% -10%, var(--os-glow), transparent 70%)`,
-        }}
-      />
+      {embedded ? null : (
+        <div
+          className="pointer-events-none fixed inset-x-0 top-0 h-72 opacity-60"
+          style={{
+            background: `radial-gradient(1000px 320px at 20% -10%, var(--os-glow), transparent 70%)`,
+          }}
+        />
+      )}
 
-      <div className="relative mx-auto flex min-h-screen max-w-[104rem] flex-col gap-4 px-4 py-5 lg:px-6">
+      <div
+        className={`relative mx-auto flex max-w-[104rem] flex-col gap-4 px-4 lg:px-6 ${
+          embedded ? 'py-1' : 'min-h-screen py-5'
+        }`}
+      >
+        {embedded ? null : (
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
@@ -62,6 +78,7 @@ export function MainDashboard() {
             </div>
           </dl>
         </header>
+        )}
 
         <main className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-[minmax(0,23rem)_minmax(0,20rem)_minmax(0,1fr)]">
           <TemplateSelector />

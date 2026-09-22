@@ -1,9 +1,13 @@
-# OmniScript — The Ultimate Linux Shell Utility Composer
+# OmniScript — A platform for browser-side tools
 
-Compose production-grade bash wrappers from registry-driven building blocks. Pick a
-**Base Linux Utility Architecture**, toggle the functional modules you want, choose a
-palette, and OmniScript compiles a complete, colour-coded, dependency-aware shell
-script — live in the browser, ready to download.
+OmniScript is organised as a **Domain → Template → Tool** platform. Every card, route and
+search result is derived from a central registry, so the app scales from a handful of tools
+to hundreds without a navigation rewrite.
+
+The original composer still lives here: the four legacy bash blueprints (myip, sysinfo,
+snapkit, sentinel) are migrated into their natural domains as composer tools, and you can
+still pick a **Base Linux Utility Architecture**, toggle modules, choose a palette and
+download a complete, colour-coded, dependency-aware shell script — live in the browser.
 
 ```
 ┌─ 01 Base Architecture ─┐ ┌─ 02 Control Matrix ─┐ ┌─ 03 Shell Sandbox ──────────┐
@@ -28,7 +32,29 @@ npm run lint       # oxlint
 ```
 src/
 ├── types/
+│   ├── catalog.ts             # Domain, ToolTemplate, ToolMeta, ToolDefinition, ResolvedRoute
 │   └── script.ts              # FlagModule, ScriptTemplate, ScriptSettings, TerminalTheme
+├── registry/
+│   ├── domains.ts             # DOMAINS — the broad tool categories
+│   ├── templates.ts           # TEMPLATES — groupings inside each domain
+│   ├── catalog.ts             # assembles the tree + resolveRoute(pathname)
+│   ├── search.ts              # global search over every level
+│   └── index.ts               # barrel export
+├── router/
+│   ├── router.tsx             # tiny History-API router (provider + Link)
+│   ├── routerContext.ts       # context + useRouter()
+│   └── paths.ts               # canonical URL builders
+├── tools/
+│   ├── <domain>/<template>/<tool>/
+│   │   ├── metadata.ts        # pure ToolMeta (no React)
+│   │   └── <Tool>.tsx         # the implementation
+│   ├── shared/                # implementations reused across metadata entries
+│   └── index.ts               # TOOL_DEFINITIONS — where metadata meets code
+├── components/
+│   ├── platform/              # AppShell, breadcrumbs, cards, search palette
+│   ├── pages/                 # home / domain / template / tool / search / …
+│   ├── toolkit.tsx            # shared tool UI primitives
+│   └── ui.tsx                 # Panel, Pill, Switch, StatChip
 ├── config/
 │   ├── networkTemplate.ts     # "myip"      — 11 network diagnostic modules
 │   ├── sysMonTemplate.ts      # "sysinfo"   — 10 system metric modules
@@ -71,6 +97,34 @@ testable. It emits seven sections:
 | 5 | Clipboard utility | opt-in `wl-copy → xclip → xsel → pbcopy` wrapper that never breaks a pipeline |
 | 6 | Input argument evaluator | `case "$1" in` assembled from each active module's `bashCaseBlock`, plus `-h/--help`, empty input and a `*` error catch that exits `64` |
 | 7 | Entrypoint | `main "$@"` — help is never gated behind a dependency check |
+
+## Adding a domain, template or tool
+
+The platform is registry-driven. Nothing in `components/pages` or `App.tsx` knows the
+names of individual tools.
+
+```ts
+// 1. a domain             src/registry/domains.ts
+{ id: 'image', name: 'Image', slug: 'image', description: '…', icon: '▩', tags: ['image'] }
+
+// 2. a template           src/registry/templates.ts
+{ id: 'image-convert', domainId: 'image', name: 'Image Conversion', slug: 'image-convert',
+  description: '…', icon: '⇄', tags: ['image'] }
+
+// 3. tool metadata        src/tools/image/image-convert/resize/metadata.ts
+import type { ToolMeta } from '../../../../types/catalog';
+export const metadata: ToolMeta = {
+  id: 'image-resize', domainId: 'image', templateId: 'image-convert',
+  name: 'Image Resizer', slug: 'resize', description: '…', icon: '⇱',
+  status: 'available', tags: ['image', 'resize'],
+};
+
+// 4. the implementation   src/tools/image/image-convert/resize/ResizeTool.tsx
+// 5. register it          src/tools/index.ts  →  { metadata, Component: ResizeTool }
+```
+
+That is the whole contract: metadata plus an implementation. The domain page, template
+page, dynamic route, breadcrumb and global search all pick the tool up automatically.
 
 ## Adding a flag module
 

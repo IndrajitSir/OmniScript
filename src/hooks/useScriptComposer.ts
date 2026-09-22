@@ -62,8 +62,10 @@ const DEFAULT_OPTIONS: ComposerOptions = {
   includeTrace: DEFAULT_SETTINGS.includeTrace,
 };
 
-function createInitialState(): PersistedComposerState {
-  const fallbackTemplate = TEMPLATE_REGISTRY[0]!;
+function createInitialState(initialTemplateId?: string): PersistedComposerState {
+  const fallbackTemplate =
+    TEMPLATE_REGISTRY.find((template) => template.id === initialTemplateId) ??
+    TEMPLATE_REGISTRY[0]!;
   return {
     activeTemplateId: fallbackTemplate.id,
     terminalTheme: DEFAULT_THEME_ID,
@@ -75,17 +77,22 @@ function createInitialState(): PersistedComposerState {
   };
 }
 
-function readPersistedState(): PersistedComposerState {
-  const base = createInitialState();
+function readPersistedState(initialTemplateId?: string): PersistedComposerState {
+  const base = createInitialState(initialTemplateId);
   if (typeof window === 'undefined') return base;
 
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return base;
     const parsed = JSON.parse(raw) as Partial<PersistedComposerState>;
+    const forced = TEMPLATE_REGISTRY.find((t) => t.id === initialTemplateId);
     const templateExists = TEMPLATE_REGISTRY.some((t) => t.id === parsed.activeTemplateId);
     return {
-      activeTemplateId: templateExists ? parsed.activeTemplateId! : base.activeTemplateId,
+      activeTemplateId: forced
+        ? forced.id
+        : templateExists
+          ? parsed.activeTemplateId!
+          : base.activeTemplateId,
       terminalTheme: parsed.terminalTheme && parsed.terminalTheme in THEMES
         ? parsed.terminalTheme
         : base.terminalTheme,
@@ -106,8 +113,10 @@ function readPersistedState(): PersistedComposerState {
  * script is a memoised pure function of it — there is no imperative "generate"
  * step anywhere in the app.
  */
-export function useScriptComposer(): UseScriptComposerResult {
-  const [state, setState] = useState<PersistedComposerState>(readPersistedState);
+export function useScriptComposer(initialTemplateId?: string): UseScriptComposerResult {
+  const [state, setState] = useState<PersistedComposerState>(() =>
+    readPersistedState(initialTemplateId),
+  );
 
   useEffect(() => {
     try {
@@ -200,7 +209,10 @@ export function useScriptComposer(): UseScriptComposerResult {
     setState((current) => ({ ...current, terminalTheme: id }));
   }, []);
 
-  const resetAll = useCallback(() => setState(createInitialState()), []);
+  const resetAll = useCallback(
+    () => setState(createInitialState(initialTemplateId)),
+    [initialTemplateId],
+  );
 
   return {
     templates: TEMPLATE_REGISTRY,

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+// import { ToolWorkspace } from '../platform/ToolWorkspace';
 import type { DomainNode, TemplateNode, ToolDefinition } from '../../types/catalog';
 import { Breadcrumbs } from '../platform/Breadcrumbs';
 import { ToolStatusPill } from '../platform/Cards';
@@ -26,7 +27,7 @@ export function ToolPage({
   const Component = tool.Component;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-4">
       <Breadcrumbs
         crumbs={[
           { label: 'Home', to: homePath() },
@@ -70,4 +71,5 @@ export function ToolPage({
       <Component tool={meta} />
     </div>
   );
+  // return <ToolWorkspace domain={domain} template={template} tool={tool} />;
 }

@@ -129,7 +129,7 @@ export function ControlMatrix() {
       <div className="-mx-2 grid grid-cols-1 gap-1.5 rounded-lg border border-[var(--os-border)] bg-[var(--os-bg)]/40 p-2">
         <StatChip label="Modules compiled" value={`${activeModules.length}`} />
         <StatChip label="Packages verified" value={`${dependencies.length}`} />
-        <StatChip label="Palette id" value={theme.id} />
+        {/* <StatChip label="Palette id" value={theme.id} /> */}
         <StatChip
           label="Output bytes"
           value={new TextEncoder().encode(script).length.toLocaleString()}

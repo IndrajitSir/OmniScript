@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DOMAIN_NODES, getAllTools, getToolById, getToolContext } from '../../registry';
-import { searchPath, toolPath } from '../../router/paths';
+import { searchPath } from '../../router/paths';
 import { Link } from '../../router/router';
 import { useRouter } from '../../router/routerContext';
 import { usePlatformContext } from '../../state/platformContext';
@@ -129,7 +129,7 @@ export function HomePage() {
         </p>
       </Panel>
 
-      <p className="mx-auto max-w-2xl text-center text-[11px] leading-relaxed text-[var(--os-muted)]">
+      {/* <p className="mx-auto max-w-2xl text-center text-[11px] leading-relaxed text-[var(--os-muted)]">
         Every URL is dynamic:{' '}
         {featuredTools.slice(0, 2).map((definition, index) => {
           const context = getToolContext(definition);
@@ -146,7 +146,7 @@ export function HomePage() {
             </span>
           );
         })}
-      </p>
+      </p> */}
     </div>
   );
 }

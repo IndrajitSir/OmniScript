@@ -9,6 +9,7 @@ import { resolveRoute } from './registry';
 import { RouterProvider } from './router/router';
 import { useRouter } from './router/routerContext';
 import { PlatformProvider } from './state/PlatformProvider';
+import { ComposerProvider } from './state';
 
 /**
  * Route resolution is entirely data-driven: `resolveRoute` maps any pathname
@@ -43,9 +44,11 @@ export default function App() {
   return (
     <RouterProvider>
       <PlatformProvider>
-        <AppShell>
-          <RouterOutlet />
-        </AppShell>
+        <ComposerProvider>
+          <AppShell>
+            <RouterOutlet />
+          </AppShell>
+        </ComposerProvider>
       </PlatformProvider>
     </RouterProvider>
   );

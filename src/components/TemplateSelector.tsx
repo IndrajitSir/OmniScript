@@ -1,7 +1,7 @@
 import { dependencyInfo } from "../config/dependencies";
 import { useComposer } from "../state";
 import { Panel, Pill } from "./ui";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
 
 export function TemplateSelector() {
@@ -21,11 +21,11 @@ export function TemplateSelector() {
   const enabledCount = enabledModuleIds.size;
   const commandNameTouched =
     settings.commandName !== activeTemplate.defaultCommandName;
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   // const [showTooltip, setShowTooltip] = useState(false);
-  const [isTruncated, setIsTruncated] = useState(false);
+  // const [isTruncated, setIsTruncated] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
+  // const textRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -33,20 +33,20 @@ export function TemplateSelector() {
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
+        // setIsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (textRef.current) {
-      const element = textRef.current;
-      // If the scroll width is greater than physical client width, it is truncated
-      setIsTruncated(element.scrollWidth > element.clientWidth);
-    }
-  }, [activeTemplate]);
+  // useEffect(() => {
+  //   if (textRef.current) {
+  //     const element = textRef.current;
+  //     If the scroll width is greater than physical client width, it is truncated
+  //     setIsTruncated(element.scrollWidth > element.clientWidth);
+  //   }
+  // }, [activeTemplate]);
 
   return (
     <Panel

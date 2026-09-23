@@ -2,13 +2,13 @@ import { dependencyInfo } from "../config/dependencies";
 import { useComposer } from "../state";
 import { Panel, Pill } from "./ui";
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+// import { motion, AnimatePresence } from "framer-motion";
 
 export function TemplateSelector() {
   const {
-    templates,
+    // templates,
     activeTemplate,
-    selectTemplate,
+    // selectTemplate,
     settings,
     setCommandName,
     availableModules,
@@ -22,7 +22,7 @@ export function TemplateSelector() {
   const commandNameTouched =
     settings.commandName !== activeTemplate.defaultCommandName;
   const [isOpen, setIsOpen] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+  // const [showTooltip, setShowTooltip] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);

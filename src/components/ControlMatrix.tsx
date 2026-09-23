@@ -44,7 +44,7 @@ export function ControlMatrix() {
     settings,
     updateOptions,
     // themes,
-    theme,
+    // theme,
     // setTheme,
     resetAll,
     activeModules,
